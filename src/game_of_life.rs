@@ -237,4 +237,25 @@ mod tests {
         assert_eq!(population(&next), 0);
     }
 
+
+    // Catches a wrong next_generation that mutates the grid in place instead of reading from the original generation.
+    #[test]
+    fn blinker_after_one_generation_rotates_horizontal() {
+        let grid = load_pattern(1);
+        let gen1 = next_generation(&grid);
+        let expected = grid_from(&[(5, 9), (5, 10), (5, 11)]);
+        assert_eq!(gen1, expected);
+    }
+
+    // Catches a wrong next_generation whose loops stop one short of ROWS or COLS (e.g., 0..ROWS - 1 or 0..COLS - 1).
+    #[test]
+    fn bottom_right_block_stays_alive() {
+        let grid = grid_from(&[
+            (ROWS - 2, COLS - 2),
+            (ROWS - 2, COLS - 1),
+            (ROWS - 1, COLS - 2),
+            (ROWS - 1, COLS - 1),
+        ]);
+        assert_eq!(next_generation(&grid), grid);
+    }
 }
