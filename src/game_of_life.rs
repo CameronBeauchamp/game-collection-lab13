@@ -1,11 +1,11 @@
 // Game of Life, Weeks 12-13: grid, display, neighbor counts, the rule for one cell,
 // generations, and preset patterns.
 //
-// TODO: remove the next line once every function below is used.
-#![allow(dead_code)]
+use crate::input::read_int;
+use std::io::{self, Write};
 
-// TODO: add the imports you need (the pattern and generation prompts use
-// crate::input::read_int; waiting for Enter uses std::io).
+
+
 
 const ROWS: usize = 10;
 const COLS: usize = 20;
@@ -50,7 +50,7 @@ pub fn next_state(alive: bool, neighbors: u8) -> bool {
         _ => false,
     }
 }
-
+#[allow(dead_code)] 
 pub fn print_neighbor_counts(grid: &Grid) {
     for r in 0..ROWS {
         for c in 0..COLS {
@@ -122,22 +122,38 @@ pub fn population(grid: &Grid) -> usize {
 }
 
 
-// TODO: replace this Week 12 version. New play(): show the pattern menu (1 blinker,
-// 2 block, 3 glider), ask how many generations, then print each generation with its
-// number and population, waiting for Enter between steps.
 pub fn play() {
-    let mut grid = new_grid();
-    grid[4][10] = true;
-    grid[5][10] = true;
-    grid[6][10] = true;
-    print_grid(&grid);
-    println!();
-    print_neighbor_counts(&grid);
-    println!();
-    let alive = grid[5][10];
-    let neighbors = count_neighbors(&grid, 5, 10);
-    println!("Center cell next generation: {}", if next_state(alive, neighbors) { "alive" } else { "dead" });
+    println!("Conway's Game of Life");
+    println!("Choose a pattern:");
+    println!("  1. Blinker");
+    println!("  2. Block");
+    println!("  3. Glider");
+
+    let choice = read_int("Enter pattern choice (1-3): ", 1, 3);
+    let generations = read_int("How many generations? ", 1, 100) as usize;
+
+    let mut grid = load_pattern(choice);
+
+    for generation in 0..=generations {
+        println!(
+            "\nGeneration {} (Population: {})",
+            generation,
+            population(&grid)
+        );
+        print_grid(&grid);
+
+        if generation < generations {
+            print!("Press Enter for next generation...");
+            io::stdout().flush().unwrap();
+            let mut pause = String::new();
+            io::stdin().read_line(&mut pause).unwrap();
+            grid = next_generation(&grid);
+        }
+    }
 }
+
+
+
 
 #[cfg(test)]
 mod tests {
