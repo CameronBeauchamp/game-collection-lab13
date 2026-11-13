@@ -190,7 +190,35 @@ mod tests {
         assert_eq!(after_two, start);
     }
 
-    // TODO (student): the glider test (after four generations on an empty grid the
-    // population is 5 and the shape has moved one row and one column along its
-    // direction of travel), and one more test of your own choosing.
+        #[test]
+    fn glider_translates_after_four_generations() {
+        let mut grid = load_pattern(3);
+        assert_eq!(population(&grid), 5);
+
+        for _ in 0..4 {
+            grid = next_generation(&grid);
+        }
+
+        assert_eq!(population(&grid), 5);
+                let expected = grid_from(&[(2, 3), (3, 4), (4, 2), (4, 3), (4, 4)]);
+        assert_eq!(grid, expected);
+
+    }
+
+    #[test]
+    fn load_pattern_sets_expected_populations_and_defaults() {
+        assert_eq!(population(&load_pattern(1)), 3);
+        assert_eq!(population(&load_pattern(2)), 4);
+        assert_eq!(population(&load_pattern(3)), 5);
+        assert_eq!(population(&load_pattern(0)), 0);
+        assert_eq!(population(&load_pattern(99)), 0);
+    }
+
+    #[test]
+    fn empty_grid_remains_empty() {
+        let grid = new_grid();
+        let next = next_generation(&grid);
+        assert_eq!(population(&next), 0);
+    }
+
 }
